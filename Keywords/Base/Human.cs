@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace Keywords.Base;
 
-namespace Keywords.Base
+public class Human
 {
-    public class Human
+    public void Drink()
     {
-        public void Drink()
-        {
-            Console.WriteLine("The human is drinking");
-        }
+        Console.WriteLine("The human is drinking");
     }
 }

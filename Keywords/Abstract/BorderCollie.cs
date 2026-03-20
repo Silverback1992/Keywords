@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace Keywords.Abstract;
 
-namespace Keywords.Abstract
+public class BorderCollie : Dog
 {
-    public class BorderCollie : Dog
+    public override void Bark()
     {
-        public override void Bark()
-        {
-            Console.WriteLine("Border Collie barks!");
-        }
+        Console.WriteLine("Border Collie barks!");
     }
 }
