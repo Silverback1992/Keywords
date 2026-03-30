@@ -5,6 +5,8 @@ using Keywords.Explicit;
 using Keywords.Extern;
 using Keywords.In;
 using Keywords.Interface;
+using Keywords.Lock;
+using Keywords.New;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 
@@ -581,6 +583,82 @@ if (nullableString is null)
 Console.WriteLine("""
 ╔══════════════════════════════╗
 ║   END: is                    ║
+╚══════════════════════════════╝
+""");
+
+#endregion
+
+#region new
+
+Console.WriteLine("""
+╔═══════════════════════════════╗
+║  START: new                   ║
+╚═══════════════════════════════╝
+""");
+
+//VIP DONT DEMO IT YET
+
+var mauCat = new EgyptianMau();
+mauCat.TellOpinionOnBongos();
+Cat othercat = mauCat;
+othercat.TellOpinionOnBongos();
+
+var aegeanCat = new Aegean();
+aegeanCat.TellOpinionOnBongos();
+Cat othercat2 = aegeanCat;
+othercat2.TellOpinionOnBongos();
+
+Console.WriteLine("""
+╔══════════════════════════════╗
+║   END: new                   ║
+╚══════════════════════════════╝
+""");
+
+#endregion
+
+#region null
+
+Console.WriteLine("""
+╔═══════════════════════════════╗
+║  START: null                  ║
+╚═══════════════════════════════╝
+""");
+
+// the null keyword is a literal that represents a null reference, one that doesn't refer to any object.
+// It can be assigned to any reference type or nullable value type.
+
+//A nullable value type T? represents all the values of the underlying value type T plus an additional null value.
+bool? isRaining = null; // Nullable bool can be true, false, or null
+
+Console.WriteLine("""
+╔══════════════════════════════╗
+║   END: null                  ║
+╚══════════════════════════════╝
+""");
+
+#endregion
+
+
+
+#region lock
+
+Console.WriteLine("""
+╔═══════════════════════════════╗
+║  START: lock                  ║
+╚═══════════════════════════════╝
+""");
+
+object lockObj = new object();
+
+for (int i = 0; i <= 3; i++)
+{
+    int threadId = i; // Capture loop variable correctly
+    new Thread(() => Worker.DoWork(threadId, lockObj)).Start();
+}
+
+Console.WriteLine("""
+╔══════════════════════════════╗
+║   END: lock                  ║
 ╚══════════════════════════════╝
 """);
 
