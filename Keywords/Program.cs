@@ -1,20 +1,23 @@
 ﻿using Keywords.Abstract;
 using Keywords.Base;
 using Keywords.Delegate;
+using Keywords.Explicit;
+using Keywords.Extern;
+using Keywords.In;
+using Keywords.Interface;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 
-#region abstract
+#region Abstract
 
-Console.WriteLine(
-"""
+Console.WriteLine("""
 ╔══════════════════════════════╗
-║     START: Abstract          ║
+║      START: Abstract         ║
 ╚══════════════════════════════╝
-"""
-);
+""");
 
-//can't create an instance of an abstract class
-//var alett = new Dog();
+// Note: You cannot create an instance of an abstract class
+// var alert = new Dog(); 
 
 var blink = new BorderCollie();
 blink.Sit();
@@ -23,148 +26,132 @@ blink.Name = "Blink";
 
 Console.WriteLine(blink.Name);
 
-Console.WriteLine(
-"""
+Console.WriteLine("""
 ╔══════════════════════════════╗
-║      END: Abstract           ║
+║       END: Abstract          ║
 ╚══════════════════════════════╝
-"""
-);
+""");
 
 #endregion
 
-#region as
+#region As
 
-Console.WriteLine(
-"""
+Console.WriteLine("""
 ╔══════════════════════════════╗
-║     START: as                ║
+║        START: as             ║
 ╚══════════════════════════════╝
-
-"""
-);
+""");
 
 object obj1 = "hello";
-string? str1 = obj1 as string; //successful cast, str1 will be "hello"
+// Successful cast: str1 will be "hello"
+string? str1 = obj1 as string;
 Console.WriteLine(str1);
 
 object obj2 = 123;
-string? str2 = obj2 as string; //unsuccessful cast, str2 will be null
+// Unsuccessful cast: str2 will be null because obj2 is an int
+string? str2 = obj2 as string;
 Console.WriteLine(str2);
 
-Console.WriteLine(
-"""
+Console.WriteLine("""
 ╔══════════════════════════════╗
-║      END: as                 ║
+║         END: as              ║
 ╚══════════════════════════════╝
-
-"""
-);
+""");
 
 #endregion
 
-#region base
+#region Base
 
-Console.WriteLine(
-"""
+Console.WriteLine("""
 ╔══════════════════════════════╗
-║     START: base              ║
+║       START: base            ║
 ╚══════════════════════════════╝
-"""
-);
+""");
 
 var peti = new EnergyDrinkLover();
 peti.DrinkEnergyDrink();
 
-var myCar = new Car("Toyota", 4); //the base constructor will be called first, then the derived constructor
+// The base constructor is called first, then the derived constructor
+var myCar = new Car("Toyota", 4);
 
-Console.WriteLine(
-"""
+Console.WriteLine("""
 ╔══════════════════════════════╗
-║      END: base               ║
+║        END: base             ║
 ╚══════════════════════════════╝
-"""
-);
+""");
 
 #endregion
 
-#region break
+#region Break
 
-Console.WriteLine(
-"""
+Console.WriteLine("""
 ╔══════════════════════════════╗
-║     START: break             ║
+║       START: break           ║
 ╚══════════════════════════════╝
-"""
-);
+""");
 
 for (int i = 0; i < 5; i++)
 {
     if (i == 2)
     {
-        Console.WriteLine("breaking from loop");
+        Console.WriteLine("Breaking from loop...");
         break;
     }
 }
 
-Console.WriteLine(
-"""
+Console.WriteLine("""
 ╔══════════════════════════════╗
-║      END: break              ║
+║        END: break            ║
 ╚══════════════════════════════╝
-"""
-);
+""");
 
 #endregion
 
-#region try-catch-finally
+#region Try-Catch-Finally
 
-Console.WriteLine(
-"""
+Console.WriteLine("""
 ╔══════════════════════════════╗
-║     START: try-catch-finally ║
+║   START: try-catch-finally   ║
 ╚══════════════════════════════╝
-"""
-);
+""");
 
-try //use the try block to wrap code that may throw an exception
+// Use 'try' to wrap code that may throw an exception
+try
 {
-
+    // Implementation here
 }
-catch (Exception) //use the catch block to handle exceptions thrown in the try block, you can have multiple catch blocks for different exception types
+// Use 'catch' to handle exceptions. Multiple blocks can exist for different types.
+catch (Exception)
 {
-
     throw;
 }
-finally //finally block is optional, but if present it will always be executed regardless of whether an exception was thrown or caught
+// 'finally' is optional; it always executes regardless of an exception
+finally
 {
+    // Cleanup code
 }
 
-Console.WriteLine(
-"""
+Console.WriteLine("""
 ╔══════════════════════════════╗
-║      END: try-catch-finally  ║
+║    END: try-catch-finally    ║
 ╚══════════════════════════════╝
-"""
-);
+""");
 
 #endregion
 
-#region checked-unchecked
+#region Checked-Unchecked
 
-Console.WriteLine(
-"""
+Console.WriteLine("""
 ╔══════════════════════════════╗
-║     START: checked-unchecked ║
+║   START: checked-unchecked   ║
 ╚══════════════════════════════╝
-"""
-);
+""");
 
 int x = int.MaxValue;
-int y = x + 1;
+int y = x + 1; // Default behavior: overflows silently to int.MinValue
 Console.WriteLine(y);
 
-//this will throw an exception because of overflow
+// This will throw an exception because of explicit overflow checking
 try
 {
     checked
@@ -172,45 +159,38 @@ try
         int overflowEx = x + 1;
     }
 }
-catch (OverflowException ex)
+catch (OverflowException)
 {
     Console.WriteLine("Caught the overflow exception!");
 }
 
 try
 {
-    checked
-    {
-        int overflowEx2 = checked(x + 1); //expression form of checked, still throws overflow exception
-    }
+    // Expression form of checked
+    int overflowEx2 = checked(x + 1);
 }
-catch (OverflowException ex)
+catch (OverflowException)
 {
-    Console.WriteLine("Caught the overflow exception!");
+    Console.WriteLine("Caught the expression-based overflow exception!");
 }
 
-//overflow exception in case of constant - complier warns about overflow at compile time
-//int z = int.MaxValue + 1;
+// Note: Constant overflows (e.g., int z = int.MaxValue + 1) are caught by the compiler at compile time.
 
-Console.WriteLine(
-"""
+Console.WriteLine("""
 ╔══════════════════════════════╗
-║      END: checked-unchecked  ║
+║    END: checked-unchecked    ║
 ╚══════════════════════════════╝
-"""
-);
+""");
 
 #endregion
 
-#region continue
+#region Continue
 
-Console.WriteLine(
-"""
+Console.WriteLine("""
 ╔══════════════════════════════╗
-║     START: continue          ║
+║       START: continue        ║
 ╚══════════════════════════════╝
-"""
-);
+""");
 
 for (int i = 0; i < 5; i++)
 {
@@ -223,210 +203,385 @@ for (int i = 0; i < 5; i++)
     Console.WriteLine($"i is {i}");
 }
 
-Console.WriteLine(
-"""
+Console.WriteLine("""
 ╔══════════════════════════════╗
-║      END: continue           ║
+║        END: continue         ║
 ╚══════════════════════════════╝
-"""
-);
+""");
 
 #endregion
 
-#region default
+#region Default
 
-Console.WriteLine(
-"""
+Console.WriteLine("""
 ╔══════════════════════════════╗
-║     START: default           ║
+║       START: default         ║
 ╚══════════════════════════════╝
-"""
-);
+""");
 
-//use default as the default operator or literal to produce the default value of a type
+// Produces the default value of a type (0 for int, null for reference types)
 int a = default;
-Console.WriteLine(a); //0
+Console.WriteLine(a);
 
-Console.WriteLine(
-"""
+Console.WriteLine("""
 ╔══════════════════════════════╗
-║      END: default            ║
+║        END: default          ║
 ╚══════════════════════════════╝
-"""
-);
+""");
 
 #endregion
 
-#region delegate
+#region Delegate & Event
 
-Console.WriteLine(
-"""
+Console.WriteLine("""
 ╔══════════════════════════════╗
-║     START: delegate          ║
+║       START: delegate        ║
 ╚══════════════════════════════╝
-"""
-);
+""");
 
 var mathOp = new MathOperation();
-mathOp.Operator = Calculations.Add; //we can assign a method to the delegate property, the method must match the signature of the delegate type (int, int) => int
+
+// Assigning a method to a delegate property (signature must match)
+mathOp.Operator = Calculations.Add;
 Console.WriteLine(mathOp.Calculate(3, 4));
 
-Console.WriteLine(mathOp.Calculate(3, 4, Calculations.Multiply)); //we can also pass a method as an argument to the Calculate method, this will use the method passed as an argument instead of the one assigned to the Operator property
+// Passing a method directly as an argument
+Console.WriteLine(mathOp.Calculate(3, 4, Calculations.Multiply));
 
-mathOp.Operator = (a, b) => a - b; //we can also assign a lambda expression to the delegate property, the lambda expression must also match the signature of the delegate type
+// Assigning a lambda expression
+mathOp.Operator = (a, b) => a - b;
 Console.WriteLine(mathOp.Calculate(3, 4));
 
+// LINQ: The lambda x => x > 3 is compiled into a delegate
 var myList = new List<int> { 1, 2, 3, 4, 5 };
-myList.Where(x => x > 3); //x => x > 3 is compiled into a delegate
+var filtered = myList.Where(x => x > 3);
 
-Func<int, int, int> add = (a, b) => a + b;  //Func is a built-in delegate type - T1, T2, ... Tn, TResult
-Action<string> print = message => Console.WriteLine(message); //Action is a built-in delegate type - T1, T2, ... Tn, void
+// Built-in Delegate Types:
+// Func: T1, T2... to TResult
+Func<int, int, int> add = (a, b) => a + b;
+// Action: T1, T2... returns void
+Action<string> print = Console.WriteLine;
 print("Hello World!");
 
-//parameterless lambda expressions can be assigned to Action delegate type or Func delegate type
+// Parameterless lambdas
 Action sayHello = () => Console.WriteLine("Hello!");
 Func<int> getNumber = () => 42;
 
-//Closures - when a lambda expression captures variables from its enclosing scope, it creates a closure that allows the lambda to access and modify those variables even after the scope has ended
+// --- Closures ---
+// Capturing variables from an enclosing scope
 int multiplier = 2;
-Func<int, int> multiplyByMultiplier = x => x * multiplier; //captures the multiplier variable
-multiplier = 10; //changing the value of multiplier will affect the behavior of the delegate
-Console.WriteLine(multiplyByMultiplier(5));
+Func<int, int> multiplyByMultiplier = x => x * multiplier;
+multiplier = 10; // This change affects the delegate behavior
+Console.WriteLine(multiplyByMultiplier(5)); // Prints 50
 
+// Closure Issue: Capturing the loop variable
 var myActions = new List<Action>();
-
 for (int i = 0; i < 5; i++)
 {
-    myActions.Add(() => Console.WriteLine(i)); //captures the loop variable i
+    myActions.Add(() => Console.WriteLine(i));
 }
-
 foreach (var action in myActions)
 {
-    action(); //all actions will print 5 because they capture the same variable i
+    action(); // Prints '5' five times because they all capture the same 'i'
 }
 
+// Closure Solution: Local copy
 var myActions2 = new List<Action>();
-
 for (int i = 0; i < 5; i++)
 {
-    int copy = i; //create a copy of the loop variable for each iteration, now each lambda captures a different variable
+    int copy = i;
     myActions2.Add(() => Console.WriteLine(copy));
 }
-
 foreach (var action in myActions2)
 {
-    action(); // now the actions will print 0, 1, 2, 3, 4 because they capture different variables
+    action(); // Prints 0, 1, 2, 3, 4
 }
 
-Predicate<int> isEven = x => x % 2 == 0; //Predicate is a built-in delegate type that returns a bool
+// Predicate: Returns a bool
+Predicate<int> isEven = x => x % 2 == 0;
 Console.WriteLine(isEven(4));
 
-//Events are based on delegates, they allow a class to notify other classes when something happens.
-//The class that raises the event is called the publisher, and the classes that subscribe to the event are called subscribers.
-//The publisher defines an event using a delegate type, and subscribers can attach their event handler methods to the event using the += operator.
+// --- Events ---
+// Events allow publishers to notify subscribers using the += operator
 var button = new Button();
 button.Clicked += ButtonInteractions.OnButtonClicked;
-
 button.Click();
 
-//EventHandler<TEventArgs> is a built-in delegate type for events, it has the signature (object sender, TEventArgs e) => void
-//Can create custom event args by inheriting from EventArgs and adding properties to it, then use the custom event args type as the generic parameter for EventHandler<TEventArgs>
+// Custom EventArgs example
 var fileSaver = new FileSaver();
 fileSaver.FileSaved += FileInteractions.OnFileSaved;
-
 fileSaver.SaveFile("myfile.txt");
 
+// Comparison delegate
 var myNumbers = new List<int> { 5, 2, 9, 1 };
-myNumbers.Sort((a, b) => a.CompareTo(b)); //the Sort method can take a Comparison<T> delegate as an argument, which has the signature (T x, T y) => int
+myNumbers.Sort((val1, val2) => val1.CompareTo(val2));
 
-//Converter<TInput, TOutput> is a built-in delegate type that represents a method that converts an object from one type to another, it has the signature (TInput input) => TOutput
+// Converter delegate: (TInput) => TOutput
 var myNumbers2 = new List<string> { "1", "2", "3" };
 var parsed = myNumbers2.ConvertAll(int.Parse);
 
-//Expression trees - when you create a lambda expression, it can be compiled into a delegate or an expression tree.
-//An expression tree is a data structure that represents the code of the lambda expression as a tree of expressions, which can be analyzed and modified at runtime.
-//This is used in scenarios like LINQ to SQL, where the expression tree is translated into SQL queries.
+// --- Expression Trees ---
+// Data structures representing code, used in LINQ to SQL/Entity Framework
 Expression<Func<int, bool>> f = x => x > 5;
-//this code does not create executable code directly
 
-Console.WriteLine(
-"""
+Console.WriteLine("""
 ╔══════════════════════════════╗
-║      END: delegate           ║
+║        END: delegate         ║
 ╚══════════════════════════════╝
-"""
-);
+""");
 
 #endregion
 
-#region do
+#region Do-While
 
-Console.WriteLine(
-"""
+Console.WriteLine("""
 ╔══════════════════════════════╗
-║     START: do                ║
+║          START: do           ║
 ╚══════════════════════════════╝
-"""
-);
+""");
 
 do
 {
-    Console.WriteLine("This will always execute at least once, even if the condition is false.");
+    Console.WriteLine("This executes at least once, even if the condition is false.");
 } while (false);
 
-Console.WriteLine(
-"""
+Console.WriteLine("""
 ╔══════════════════════════════╗
-║      END: do                 ║
+║           END: do            ║
 ╚══════════════════════════════╝
-"""
-);
+""");
 
 #endregion
 
-Console.WriteLine(
-"""
+#region Explicit & Implicit
+
+Console.WriteLine("""
+╔═══════════════════════════════╗
+║  START: explicit + implicit   ║
+╚═══════════════════════════════╝
+""");
+
+// Implicit: Safe and obvious conversion handled automatically by the compiler
+int num = 42;
+double d = num;
+
+// Custom implicit conversion (Meter class)
+Keywords.Implicit.Meter m = 5.0;
+
+// Explicit: Used when data might be lost or the conversion is dangerous.
+// Programmer must write a cast.
+double myX = 5.7;
+int myY = (int)myX; // Truncates fractional part to 5
+
+// Custom explicit conversion (Meter2 class)
+Meter2 m2 = new Meter2(10.0);
+double d2 = (double)m2;
+
+Console.WriteLine("""
 ╔══════════════════════════════╗
-║     START: stackalloc        ║
+║   END: explicit + implicit   ║
 ╚══════════════════════════════╝
-"""
-);
+""");
 
-//unsafe
-//{
-//    int* p = stackalloc int[3];
-//    p[100] = 5; // compiles fine, crashes or corrupts memory
-//}
+#endregion
 
-//Span<int> span = stackalloc int[3];
+#region Extern
 
-//span[100] = 5; // ❌ runtime exception (safe)
+Console.WriteLine("""
+╔═══════════════════════════════╗
+║  START: extern                ║
+╚═══════════════════════════════╝
+""");
 
+// extern: linking C# code to something implemented elsewhere
+// Example: a native C/C++ library, runtime-provided code, another assembly
+NativeMethods.MessageBox(IntPtr.Zero, "Hello from extern!", "Extern Example", 0);
+
+Console.WriteLine("""
+╔══════════════════════════════╗
+║   END: extern                ║
+╚══════════════════════════════╝
+""");
+
+#endregion
+
+#region Fixed
+
+Console.WriteLine("""
+╔═══════════════════════════════╗
+║  START: fixed                 ║
+╚═══════════════════════════════╝
+""");
+
+// fixed: temporarily pins a variable in memory to prevent the garbage collector from moving it.
+// One thing the GC does is move objects around in memory to optimize performance.
 unsafe
 {
-    int* p;
+    int[] numbers = { 1, 2, 3, 4, 5 };
 
+    fixed (int* p = numbers)
     {
-        int asd = 5;
-        p = &asd;
+        Console.WriteLine(*p);
+        Console.WriteLine(*(p + 1));
     }
-
-    int other = 999; // may reuse same stack slot
-
-    //Thread.Sleep(20000); // give time for other code to run and potentially reuse the same stack slot
-
-    Console.WriteLine(*p);
 }
 
-
-
-
-Console.WriteLine(
-"""
+Console.WriteLine("""
 ╔══════════════════════════════╗
-║      END: stackalloc         ║
+║   END: fixed                 ║
 ╚══════════════════════════════╝
-"""
-);
+""");
 
+#endregion
 
+#region Goto
+
+Console.WriteLine("""
+╔═══════════════════════════════╗
+║  START: goto                  ║
+╚═══════════════════════════════╝
+""");
+
+Console.WriteLine("Start");
+goto Skip;
+Console.WriteLine("This line will never run");
+Skip:
+Console.WriteLine("End");
+
+Console.WriteLine("""
+╔══════════════════════════════╗
+║   END: goto                  ║
+╚══════════════════════════════╝
+""");
+
+#endregion
+
+#region In
+
+Console.WriteLine("""
+╔═══════════════════════════════╗
+║  START: in                    ║
+╚═══════════════════════════════╝
+""");
+
+// in is used in foreach loops
+var myCollection = new List<int>() { 1, 2, 3 };
+foreach (var item in myCollection)
+{
+
+}
+
+// in can be used as a parameter modifier which you use to pass an argument to a method by reference
+// rather than value
+// Normall the value is copied (or reference is copied for reference types)
+// value type -> two independent values
+// reference type -> two references to the same object
+NumberPrinter.PrintNum(5);
+
+// With in: now the parameter is passed by reference but cannot be modified inside the method
+int someNumber = 10;
+NumberPrinter.PrintNum(in someNumber);
+
+// Why this exists? -> For performance with largue structs
+// Without in -> a big struct would be copied when passed to the method, which can be expensive
+// With in -> the method receives a reference to the original struct, avoiding the copy
+
+// in can be used as a generic type parameter (variance)
+// Normally, generic type parameters are invariant, meaning you cannot use a more derived type than specified
+// If a method expects an Action<Dog> you can't give it Action<Animal> even if Dog is a subclass of Animal
+IReceiver<Expert> expertReceiver = new ExpertProcessor();
+// This is allowed because of 'in' variance: (without 'in', this would be a compile-time error)
+IReceiver<Electrician> electricianReceiver = expertReceiver;
+Electrician electrician = new Electrician { Name = "John" };
+electricianReceiver.Process(electrician);
+
+// in in LINQ
+var people = new List<string> { "Alice", "Bob", "Charlie" };
+var filteredPeople = from person in people
+                     where person.StartsWith('A')
+                     select person;
+
+Console.WriteLine("""
+╔══════════════════════════════╗
+║   END: in                    ║
+╚══════════════════════════════╝
+""");
+
+#endregion
+
+#region Interface
+
+Console.WriteLine("""
+╔═══════════════════════════════╗
+║  START: interface             ║
+╚═══════════════════════════════╝
+""");
+
+var myPs = new PlayStation();
+// myPs.Reset(); // This would be ambiguous because both interfaces have a Reset method
+((ISmartDevice)myPs).Reset(); // Calls ISmartDevice.Reset
+((IGameConsole)myPs).Reset(); // Calls IGameConsole.Reset
+
+// Interface segregation and fat interfaces: the strategy is small, focused interfaces rather than large, general-purpose ones. This promotes better design and maintainability.
+// X Instead of IMachine { Print(); Scan(); Fax(); }
+// O IPrinter { Print(); } IScanner { Scan(); } IFax { Fax(); }
+
+Console.WriteLine("""
+╔══════════════════════════════╗
+║   END: interface             ║
+╚══════════════════════════════╝
+""");
+
+#endregion
+
+#region Is
+
+Console.WriteLine("""
+╔═══════════════════════════════╗
+║  START: is                    ║
+╚═══════════════════════════════╝
+""");
+
+// is: checks if something matches a type or pattern
+// 1. Type checking
+object myObj = "hello";
+
+if (myObj is string s)
+{
+    Console.WriteLine("It's a string!");
+}
+
+// 2. Type check + variable declaration
+// Can check and create a typed variable in one step
+object myObj2 = 123;
+
+if (myObj2 is int myInt)
+{
+    Console.WriteLine($"It's an int: {myInt}");
+}
+
+// 3. Pattern matching with 'is'
+int myPatternExample = 10;
+
+if (myPatternExample is > 5 and < 15)
+{
+    Console.WriteLine("myPatternExample is between 5 and 15");
+}
+
+// Equivalent classic code would be: if (myPatternExample > 5 && myPatternExample < 15)
+
+// 4. 'is' can also be used for null checks
+string? nullableString = null;
+
+if (nullableString is null)
+{
+    Console.WriteLine("The string is null");
+}
+
+Console.WriteLine("""
+╔══════════════════════════════╗
+║   END: is                    ║
+╚══════════════════════════════╝
+""");
+
+#endregion
