@@ -638,7 +638,66 @@ Console.WriteLine("""
 
 #endregion
 
+#region object
 
+//TODO: finish this section
+
+#endregion
+
+#region operator
+
+Console.WriteLine("""
+╔═══════════════════════════════╗
+║  START: operator              ║
+╚═══════════════════════════════╝
+""");
+
+// Conversion operators: where operator meets implicit/explicit
+// Already discussed in the explicit/implicit section with custom conversions
+
+// The operator keyword lets you define how operators like +, -, *, / work for your custom types.
+// This is called operator overloading.
+
+// Rules:
+// 1. You can only overload existing operators, you cannot create new ones.
+// 2. At least one operand must be of the type you're defining the operator for.
+// 3. Must be public and static
+
+
+
+Console.WriteLine("""
+╔══════════════════════════════╗
+║   END: operator              ║
+╚══════════════════════════════╝
+""");
+
+#endregion
+
+#region out
+
+Console.WriteLine("""
+╔═══════════════════════════════╗
+║  START: out                   ║
+╚═══════════════════════════════╝
+""");
+
+// The out value will be assigned inside the method, and the caller can use it after the method returns.
+// It's a way to return multiple values from a method or to return a value without using the return statement.
+
+// Must be assigned in the method before it returns, otherwise it will be a compile-time error.
+// Caller does not need to initialize the variable before passing it to the method, but it must be declared.
+
+// Keyword  Must Initialize Before?  Must Be Assigned In Method?
+// ref              ✔                           X
+// out              X                           ✔
+
+Console.WriteLine("""
+╔══════════════════════════════╗
+║   END: out                   ║
+╚══════════════════════════════╝
+""");
+
+#endregion
 
 #region lock
 
