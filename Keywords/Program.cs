@@ -7,8 +7,9 @@ using Keywords.In;
 using Keywords.Interface;
 using Keywords.Lock;
 using Keywords.New;
+using System.Collections;
 using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
+using Keywords.Operator;
 
 #region Abstract
 
@@ -596,17 +597,29 @@ Console.WriteLine("""
 ╚═══════════════════════════════╝
 """);
 
-//VIP DONT DEMO IT YET
+// For both sorceress.Move() and character.Move(), the method that gets called is determined by the type of the reference variable, not the actual object.
+// Both already known at compile time, so the compiler binds to the method based on the reference type.
+var sorceress = new Sorceress();
+sorceress.Move();
+DiabloCharacter character = sorceress;
+character.Move();
 
+// Both mauCat and othercat point to the same object in memory, which is an instance of EgyptianMau.
+// The Egyiptian Mau Instance has a VPtr (virtual method table pointer) that points to the overridden TellOpinionOnBongos() method in EgyptianMau.
 var mauCat = new EgyptianMau();
 mauCat.TellOpinionOnBongos();
 Cat othercat = mauCat;
 othercat.TellOpinionOnBongos();
 
+// In this case the new keyword in Aegean's TellOpinionOnBongos() hides the base class method instead of overriding it.
 var aegeanCat = new Aegean();
 aegeanCat.TellOpinionOnBongos();
 Cat othercat2 = aegeanCat;
+// The reason this will call the base class's method is because of static binding.
+// The method to call is determined at compile time based on the type of the reference (Cat), not the actual object (Aegean).
+// Since Aegean's method is hidden, not overridden, the compiler will bind to Cat's version of TellOpinionOnBongos() when using a Cat reference.
 othercat2.TellOpinionOnBongos();
+aegeanCat.TellOpinionOnBongos();
 
 Console.WriteLine("""
 ╔══════════════════════════════╗
@@ -640,7 +653,32 @@ Console.WriteLine("""
 
 #region object
 
-//TODO: finish this section
+// Object is the ultimate base class for all types in C#. Every type, whether it's a value type (like int) or a reference type (like string), ultimately derives from object.
+
+// A primtive type such as int is logically and syntactically an object.
+// This allows it to fulfill 'is-a' relationships and be used in contexts that require an object, such as collections or methods that take object parameters.
+
+// A primitive type such as int is physically and behaviorally a primitive value type, 
+// which means it has value semantics (copied on assignment) and is stored on the stack (or inline in containing types) rather than the heap.
+// This allows for efficient memory usage and performance.
+// It lacks the overhead that every true heap-allocated object has, such as SyncBlockIndex and TypeHandler.
+
+// Boxing: when you assign an int to an object the CLR allocates a small chunk of memory on the Heap
+// copies the value of int into it and hands you the reference to that memory. This is called boxing because it "boxes" the value type into an object wrapper.
+int myIntValue = 42;
+object myObject = myIntValue; // Boxing occurs here
+
+object myOtherObject = 5; // Boxing
+int someIntValue = (int)myOtherObject; // Unboxing: the CLR checks that the object is actually a boxed int and then copies the value back to the stack
+
+// We use boxing with legacy collections
+ArrayList arrayList = new ArrayList();
+arrayList.Add(10); // Boxing
+int unboxedValue = (int)arrayList[0]; // Unboxing
+
+// We use boxing with some modern methods that take object parameters
+int age = 25;
+Console.WriteLine("Age: {0}", age); // The int age is boxed to an object when passed to Console.WriteLine, which expects an object parameter.
 
 #endregion
 
@@ -663,7 +701,11 @@ Console.WriteLine("""
 // 2. At least one operand must be of the type you're defining the operator for.
 // 3. Must be public and static
 
-
+var v1 = new Vector(1, 2);
+var v2 = new Vector(2, 3);
+// This will call the overloaded + operator defined in the Vector class
+// Compiled to: Vector.operator+(v1, v2) which creates a new Vector with X = 3 and Y = 5
+var v3 = v1 + v2;
 
 Console.WriteLine("""
 ╔══════════════════════════════╗
