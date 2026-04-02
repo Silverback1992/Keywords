@@ -11,6 +11,8 @@ using System.Collections;
 using System.Linq.Expressions;
 using Keywords.Operator;
 using Keywords.Out;
+using Keywords.Override;
+using Keywords.Params;
 
 #region Abstract
 
@@ -745,6 +747,69 @@ Console.WriteLine("""
 ╔══════════════════════════════╗
 ║   END: out                   ║
 ╚══════════════════════════════╝
+""");
+
+#endregion
+
+#region override
+
+Console.WriteLine("""
+╔═══════════════════════════════╗
+║  START: override              ║
+╚═══════════════════════════════╝
+""");
+
+// Use the override modifier to extend or modify the abstract or virtual implementation of an inherited method, property, indexer, or event.
+var sq = new Square(12);
+Console.WriteLine($"Area of the square: {sq.GetArea()}");
+
+Console.WriteLine("""
+╔══════════════════════════════╗
+║   END: override              ║
+╚══════════════════════════════╝
+""");
+
+#endregion
+
+#region Params
+
+Console.WriteLine("""
+╔═══════════════════════════════╗
+║  START: params                ║
+╚═══════════════════════════════╝
+""");
+
+// Params: lets a method accept a variable number of arguments. Accept many arguments -> turn them into an array.
+NumberPrintHelper.PrintNumbers(1, 2, 3, 4, 5);
+
+// You can also pass an array directly
+NumberPrintHelper.PrintNumbers([10, 20, 30]);
+
+// Rules of params:
+// 1. Must be the last parameter in the method signature
+// 2. Only one params parameter allowed per method
+// 3. Must be an array type (e.g., params int[])
+
+Console.WriteLine("""
+╔═══════════════════════════════╗
+║  END: params                  ║
+╚═══════════════════════════════╝
+""");
+
+#endregion
+
+#region Readonly
+
+Console.WriteLine("""
+╔═══════════════════════════════╗
+║  START: readonly              ║
+╚═══════════════════════════════╝
+""");
+
+Console.WriteLine("""
+╔═══════════════════════════════╗
+║  END: readonly                ║
+╚═══════════════════════════════╝
 """);
 
 #endregion
