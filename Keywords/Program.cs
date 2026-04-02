@@ -10,6 +10,7 @@ using Keywords.New;
 using System.Collections;
 using System.Linq.Expressions;
 using Keywords.Operator;
+using Keywords.Out;
 
 #region Abstract
 
@@ -732,6 +733,13 @@ Console.WriteLine("""
 // Keyword  Must Initialize Before?  Must Be Assigned In Method?
 // ref              ✔                           X
 // out              X                           ✔
+
+int myUserId = 2;
+
+if (UserCache.TryGetUsername(myUserId, out User? user))
+{
+    Console.WriteLine($"User found! Id: {user!.Id} Name: {user!.Name}");
+}
 
 Console.WriteLine("""
 ╔══════════════════════════════╗
