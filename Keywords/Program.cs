@@ -13,6 +13,10 @@ using Keywords.Operator;
 using Keywords.Out;
 using Keywords.Override;
 using Keywords.Params;
+using Keywords.Readonly;
+using Keywords.Ref;
+using Keywords.Stackalloc;
+using Keywords.Struct;
 
 #region Abstract
 
@@ -806,9 +810,187 @@ Console.WriteLine("""
 ╚═══════════════════════════════╝
 """);
 
+// Readonly field means you can assign it only during declaration or in the constructor of the class.
+// And never change what it points to after that.
+
+// Value types: value types store actual data directly
+var myReadonly = new ReadonlyTest();
+//myReadonly.Value = 20; // Compile-time error: cannot assign to readonly field outside of declaration or constructor
+
+// Reference types: reference types store a reference to the data (object) on the heap
+var myReadonly2 = new ReadonlyTest2();
+myReadonly2.City.Name = "Los Angeles"; // This is allowed because we're not changing the reference, just modifying the object it points to
+//myReadonly2.City = new City(); // Compile-time error: cannot assign a new reference to a readonly field
+
 Console.WriteLine("""
 ╔═══════════════════════════════╗
 ║  END: readonly                ║
+╚═══════════════════════════════╝
+""");
+
+#endregion
+
+#region ref 
+
+Console.WriteLine("""
+╔═══════════════════════════════╗
+║  START: ref                   ║
+╚═══════════════════════════════╝
+""");
+
+// Default behavior:
+// Value Types
+int l = 5;
+MyMathOperations.AddOne(l); // This will not change the value of 5 because it's passed by value (a copy is made)
+Console.WriteLine(l); // x is copy of l
+
+// With ref:
+// With ref: x becomes a managed pointer that points directly to the memory address of b on the stack.
+int b = 5;
+MyMathOperations.AddOne(ref b);
+
+// Rules:
+// 1. Must use ref in both method definition and method call
+// 2. Variable must be initialized before passing it as ref (unlike out, which does not require initialization)
+
+// Reference Types
+// c becomes a pointer to the pointer of myCountry1, so when we change c to point to a new Country object, myCountry1 also points to that new object.
+var myCountry1 = new Country() { Name = "Hungary" };
+CountryHandler.Change(ref myCountry1);
+Console.WriteLine(myCountry1.Name);
+
+// As a contrast if we didn't use ref, the method would only change the local copy of the reference, and myCountry1 would still point to the original Country object with Name "Hungary".
+var myCountry2 = new Country() { Name = "Hungary" };
+CountryHandler.Change(myCountry2);
+Console.WriteLine(myCountry2.Name);
+
+// Ref return: you can return a reference to a variable from a method, allowing the caller to modify the original variable through that reference.
+int[] NumbersX = { 1, 2, 3, 4, 5 };
+
+ref int extractedNumber = ref ArrayHandler.GetElement(NumbersX, 0); // Get a reference to the element at index 2 (which is 3)
+
+extractedNumber = 10; // This will change the original array because extractedNumber is a reference to that element
+
+Console.WriteLine(NumbersX[0]);
+
+// Ref locals: you can declare a local variable as a reference to another variable, allowing you to work with the original variable through that reference.
+int q = 20;
+ref int refToQ = ref q; // refToQ is now a reference to q
+refToQ = 30; // This changes the value of q to 30
+Console.WriteLine(q);
+
+Console.WriteLine("""
+╔═══════════════════════════════╗
+║  END: ref                     ║
+╚═══════════════════════════════╝
+""");
+
+#endregion
+
+#region sizeof
+
+Console.WriteLine("""
+╔═══════════════════════════════╗
+║  START: sizeof                ║
+╚═══════════════════════════════╝
+""");
+
+// sizeof: returns the number of bytes a type occupies in memory.
+// In safe mode the compiler only allows sizeof for built-in types, but in unsafe mode you can use it with any struct type.
+// sizeof doesn't work with reference types because they are stored on the heap and their size can vary (they have overhead for the object header, sync block, etc.)
+Console.WriteLine(sizeof(int));
+
+Console.WriteLine("""
+╔═══════════════════════════════╗
+║  END: sizeof                  ║
+╚═══════════════════════════════╝
+""");
+
+#endregion
+
+#region stackalloc
+
+Console.WriteLine("""
+╔═══════════════════════════════╗
+║  START: stackalloc            ║
+╚═══════════════════════════════╝
+""");
+
+// stakalloc: allocates memory on the stack instead of the heap.
+
+// Normally, when you create an array in C#, it is allocated on the heap.
+int[] heapArray = new int[5];
+// This allocated memory on the heap managed by the garbage collector.
+
+// Stack         Heap
+// fast          slow
+// auto cleaned  GC managed
+// small         large
+// short-lived   long-lived
+
+// With stackalloc: this allocates memory on the stack, not managed by GC.
+Span<int> stackArray = stackalloc int[5]; // This creates a span that points to memory on the stack
+// What happens:
+// stackalloc int[5] -> allocate 5 integers on stack
+// wrap it in Span<int> which is a struct that provides safe access to that memory
+// no heap allocation, no GC
+
+// older style: unsafe code with pointers
+// What can go wrong with pointers
+// 1. Out of bounds access: if you try to access an index outside the allocated range, you can read/write memory that doesn't belong to you, leading to undefined behavior or crashes.
+unsafe
+{
+    int* asd = stackalloc int[5];
+    asd[10] = 42; // This is an out-of-bounds access and can cause undefined behavior    
+}
+
+// 2. Dangling pointers: if the stack frame is unwound (e.g., the method returns) and you still have a pointer to that memory, it becomes a dangling pointer, which can lead to undefined behavior if accessed.
+//DanglingPointer.CreateDanglingPointer(); // long running code as an example to increase the chances of the stack frame being unwound and the memory being reused, which can cause the dangling pointer to point to invalid data.
+
+
+Console.WriteLine("""
+╔═══════════════════════════════╗
+║  END: stackalloc              ║
+╚═══════════════════════════════╝
+""");
+
+#endregion
+
+#region struct
+
+Console.WriteLine("""
+╔═══════════════════════════════╗
+║  START: struct                ║
+╚═══════════════════════════════╝
+""");
+
+var myTracker = new Tracker { CurrentPoint = new Point { X = 10 } };
+myTracker.CurrentPoint.Move(50);
+Console.WriteLine(myTracker.CurrentPoint.X);
+
+var myTracker2 = new Tracker2 { CurrentPoint = new Point2 { X = 10 } };
+myTracker2.CurrentPoint.Move(50);
+Console.WriteLine(myTracker2.CurrentPoint.X);
+
+Console.WriteLine("""
+╔═══════════════════════════════╗
+║  END: struct                  ║
+╚═══════════════════════════════╝
+""");
+
+#endregion
+
+#region typeof
+
+Console.WriteLine("""
+╔═══════════════════════════════╗
+║  START: typeof                ║
+╚═══════════════════════════════╝
+""");
+
+Console.WriteLine("""
+╔═══════════════════════════════╗
+║  END: typeof                  ║
 ╚═══════════════════════════════╝
 """);
 
