@@ -17,6 +17,9 @@ using Keywords.Readonly;
 using Keywords.Ref;
 using Keywords.Stackalloc;
 using Keywords.Struct;
+using Keywords.Typeof.AutomaticDependencyInjection;
+using Keywords.Typeof.CustomAttributeProcessing;
+using Keywords.Typeof.SmartFactory;
 
 #region Abstract
 
@@ -988,9 +991,90 @@ Console.WriteLine("""
 ╚═══════════════════════════════╝
 """);
 
+// typeof keyword: a compile-time operator used to obtain the System.Type object for a type known at compile time.
+
+// Compile time vs Runtime:
+// typeof(ClassName) -> resolved at compile time. It is faster because the compiler knows exactly which type you're referring to and can directly access its metadata. 
+// Does not require an instance of the type to get its Type object, so it can be used in static contexts or when you don't have an object instance.
+// obj.GetType() -> resolved at runtime. It is slower because it requires an instance of the object and the CLR has to determine the actual type of that instance at runtime, which involves more overhead.
+
+// Useage in attributes: attribues are metadata baked into the assembly at compile time.
+// Because of this you cannot use GetType() inside an attribute, you must use typeof.
+
+// Scenarios
+// 1. Automatic Depenedency Injection: frameworks like ASP.NET Core use typeof to register services and resolve dependencies based on type information.
+// Imagine you are building a web framework. You want to scan a user's project and automatically register 
+// every class that implements IService. You can't use obj.GetType() because you don't have an instance of those classes yet,
+// but you can use typeof to get the Type objects for those classes and register them in your DI container.
+var engine = new MagicEngine();
+engine.Start();
+
+// 2. Custom Attribute Processing: if you are building a logging framework and want to check if a class has a custom attribute like [LogSensitivity("High")],
+// you can use typeof to get the Type object for the class and then check for the presence of that attribute.
+var bankService = new BankService();
+ProcessObject.Process(bankService);
+
+// 3. Smart factory / serialization: if you are building a factory that creates objects based on type information,
+// you can use typeof to get the Type object and then use reflection to create instances or serialize/deserialize objects.
+var loadedCharacter = PlayerLoader.LoadPlayer("Warrior");
+
 Console.WriteLine("""
 ╔═══════════════════════════════╗
 ║  END: typeof                  ║
+╚═══════════════════════════════╝
+""");
+
+#endregion
+
+#region unsafe
+
+Console.WriteLine("""
+╔═══════════════════════════════╗
+║  START: unsafe                ║
+╚═══════════════════════════════╝
+""");
+
+// By defaukt C# is a managed language
+// The Garbage Collector (GC) moves objects around in memory to keep things tidy and the runtime checks every array index to make sure you don't crash the program.
+// When you mark code as unsafe you gain the ability to use pointers.
+
+// What does it actually allow?
+// 1. Pointer types (int*, char*, etc.)
+// 2. Use the "address-of" operator (&) to get the memory address of a variable
+// 3. Use hte pointer indirection operator (*) to get the value at an address
+// 4. Perform pointer arithmetic (e.g., p + 1 to move to the next element in an array)
+
+// fixed keyword connection: because the GC likes to move objects around to defragment the heap using a pointer is dangerous.
+// If you point to an object and the GC moves it, your pointer now points to garbage
+// To prevent this we use the fixed keyword inside an unsafe block to pin the object in place
+
+// Feature          Reference                               vs                                  Pointer
+// Management       GC Handles it                                                               Programmer is responsible for it 
+// Movement         GC can move object to clean up memory                                       The object must be fixed or it will crash
+// Arithmetic       You can't do myClass + 1                                                    You can do pointer arithmetic like p + 1 to move to the next element in an array
+// Safety           No blue screen of death                                                     In theory you could accidently overwrite Windoows system memory (modern operating systems use protected memory)
+
+Console.WriteLine("""
+╔═══════════════════════════════╗
+║  END: unsafe                  ║
+╚═══════════════════════════════╝
+""");
+
+#endregion
+
+#region using
+
+Console.WriteLine("""
+╔═══════════════════════════════╗
+║  START: using                 ║
+╚═══════════════════════════════╝
+""");
+
+
+
+Console.WriteLine("""
+╔═══════════════════════════════╗
+║  END: using                   ║
 ╚═══════════════════════════════╝
 """);
 
