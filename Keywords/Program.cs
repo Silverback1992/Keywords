@@ -1,25 +1,6 @@
-﻿using Keywords.Abstract;
-using Keywords.Base;
-using Keywords.Delegate;
-using Keywords.Explicit;
-using Keywords.Extern;
-using Keywords.In;
-using Keywords.Interface;
-using Keywords.Lock;
-using Keywords.New;
-using System.Collections;
-using System.Linq.Expressions;
-using Keywords.Operator;
-using Keywords.Out;
-using Keywords.Override;
-using Keywords.Params;
-using Keywords.Readonly;
-using Keywords.Ref;
-using Keywords.Stackalloc;
-using Keywords.Struct;
-using Keywords.Typeof.AutomaticDependencyInjection;
-using Keywords.Typeof.CustomAttributeProcessing;
-using Keywords.Typeof.SmartFactory;
+﻿using Keywords.Using;
+using Keywords.Volatile;
+using static System.Math;
 
 #region Abstract
 
@@ -1070,11 +1051,168 @@ Console.WriteLine("""
 ╚═══════════════════════════════╝
 """);
 
+// 1. Using directive: namespace importing
+// It tells the compiler I want to use tools from this toolbox (namespace) without having to write the full path every time.
 
+// global using: you can put this in one file (e.g., GlobalUsings.cs) and it will be available throughout the entire project, so you don't have to repeat it in every file.
+// It cleans up the header clutter
+
+// using static: allows you to import the members of a static class
+double root = Sqrt(16); // Instead of Math.Sqrt(16)
+
+// 2. Using statement: resource management
+// It is used with objects that implement the IDisposable interface, which have a Dispose() method to release unmanaged resources (e.g., file handles, database connections).
+
+// The problem: the "lazy" garbage collector
+// The GC is great at cleaning up memory but its terrible at cleaning up unmanaged resources.
+// e.g. database connections, file handles, network sockets, etc. If you forget to close a file or dispose of a database connection, it can lead to resource leaks and other issues.
+
+// The using statement ensures that Dispose() is called automatically when the block of code is exited, even if an exception occurs.
+// This is because the compiler generates a try-finally block under the hood where Dispose() is called in the finally block.
+
+string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Using", "test.txt");
+
+using (var stream = new FileStream(filePath, FileMode.Open))
+{
+    // Do work with the file
+} // The file is closed exactly here guranteed
+
+// C# 8.0+
+FileProcessor.ProcessFile(filePath); // The file is closed at the end of the method scope, even if an exception occurs.
 
 Console.WriteLine("""
 ╔═══════════════════════════════╗
 ║  END: using                   ║
+╚═══════════════════════════════╝
+""");
+
+#endregion
+
+#region virtual
+
+Console.WriteLine("""
+╔═══════════════════════════════╗
+║  START: virtual               ║
+╚═══════════════════════════════╝
+""");
+
+// virtual: the virtual keyword marks a method, property or event as virtual
+// This means that it can be overridden in a derived class using the override keyword, allowing for polymorphic behavior.
+
+// virtual property: a property is actually two hidden methods: get_PropertyName() and set_PropertyName(value).
+// When you mark a property as virtual, both the getter and setter become virtual methods that can be overridden in derived classes.
+
+// Static dispatch: usually when you call a method the Compiler knows exactly where that code lives in memory and jumps straight there.
+
+// Dynamic dispatch: with virtual methods, the method that gets called is determined at runtime based on the actual type of the object, not the type of the reference variable.
+
+// When you define a class with a virtual method, the compiler creates a hidden structure called the virtual method table (vtable) for that class.
+// This vtable contains pointers to the actual code for each virtual method.
+// It also adds a hidden pointer (vptr) to each instance of the class that points to the vtable.
+// When you call a virtual method, the CLR uses the vptr to look up the correct method implementation in the vtable at runtime, allowing for polymorphic behavior.
+
+// Inheritance and overriding: when a class inherits from another it copies the parent's VTable and then swaps out the addresses for any method it overrides
+// Animal VTable: Slot 1: -> Animal.MakeSound() address
+// Dog VTable: Slot 1: -> Dog.MakeSound() address (overrides Animal's method)
+// Cat VTable: Slot 1: -> Cat.MakeSound() address (overrides Animal's method)
+// Because the MakeSound() method is always in Slot 1 for every animal the code doesn't need to know the actual type of the animal to call the correct MakeSound() method,
+// it just looks in Slot 1 of the VTable that the vptr points to.
+
+Console.WriteLine("""
+╔═══════════════════════════════╗
+║  END: virtual                 ║
+╚═══════════════════════════════╝
+""");
+
+#endregion
+
+#region void
+
+Console.WriteLine("""
+╔═══════════════════════════════╗
+║  START: void                  ║
+╚═══════════════════════════════╝
+""");
+
+// Use void as the return type of a method or local function to specify that the method doesn't return a value.
+// While a void return type means "this returns nothing" a void* pointer in unsafe code is a pointer that can point to any type of data, but you cannot dereference it directly without first casting it to a specific pointer type (e.g., int*, char*).
+
+// Analogy:
+// int*: is a GPS coordinate with a note: this is a house treat it like a 4 byte integer
+// void*: is a GPS coordinate with no note: I have no idea what's at this address, it could be anything, you better be careful when you go there
+
+//unsafe
+//{
+//    int qqq = 10;
+//    void* ptr = &qqq;
+//    // Error: you cannot dereference a void pointer
+//    // The CPU asks: "Do I read 1 byte? 4 bytes? 8 bytes? I have no idea, the pointer doesn't tell me!"
+//    int value = *ptr;
+//}
+
+// Solution:
+unsafe
+{
+    int qqq = 10;
+    void* ptr = &qqq;
+    int* value = (int*)ptr; // Cast the void pointer to an int pointer before dereferencing
+    Console.WriteLine(*value);
+}
+
+Console.WriteLine("""
+╔═══════════════════════════════╗
+║  END: void                    ║
+╚═══════════════════════════════╝
+""");
+
+#endregion
+
+#region volatile
+
+Console.WriteLine("""
+╔═══════════════════════════════╗
+║  START: volatile              ║
+╚═══════════════════════════════╝
+""");
+
+// 1. The problem: CPU caching
+// Modern CPUs are incredibly fast but RAM is relatively slow. To speed things up each CPU core has its own L1/L2 cache
+
+// The hierarchy of speed
+// Think of the memory system as like a chef (CPU) working in a kitchen
+// L1 Cache (Level 1): this is the chef's hands. It's the fastest memory, but very small (e.g., 32KB). It holds the exact data the CPU is working on this microsecond.
+// L2 Cache (Level 2): this is the chef's cutting board. It's slower than the hands but larger (e.g., 256KB). It holds data that the CPU will likely need in the next few cycles.
+// L3 Cache (Level 3): this is the refrigerator. It is shared between all CPU cores. It's much larger (several MB) but slower than L1 and L2.
+// RAM (Main Memory): this is the grocery store down the street. It has everything but it takes "forever" (relatively speaking) to go get something from there.
+// Stack and Heap: we are talking about how your program organizes its "workspace" inside the RAM.
+
+// If a thread is running a loop checking a variable the CPU might decide: "I've checked this variable 10 times and it hasn't changed.
+// To save time I'll just keep a copy of it in my local cache and stop looking at the main RAM.
+
+// The bug: if another thread (on a different CPU core) changes that variable in the main RAM, the first thread won't see the change.
+// It keeps looking at its own local "stale" copy.
+
+// 2. The solution: volatile keyword
+// By marking a field as volatile we disable the optimizations.
+// What it does:
+// a) freshness: it forces the CPU to read the value from the main memory every time it is accessed.
+// b) memory barriers: it prevents the compiler from "reordering" instructions around that variable.
+// (Sometimes the compiler moves code around to be more efficient; volatile prevents it from moving a write after it was supposed to happen.
+
+// 3. Volatile vs lock
+// volatile: is about visibility - it ensures that if Thread A changes a value Thread B sees that change immediately
+// lock: is about atomicity - it ensures that a block of code is executed by only one thread at a time
+
+// Test:
+// Try it in debug mode
+// Then try it in release mode
+// Then try it in release mode with volatile keyword
+//var volatileDemo = new VolatileDemo();
+//volatileDemo.Run();
+
+Console.WriteLine("""
+╔═══════════════════════════════╗
+║  END: volatile                ║
 ╚═══════════════════════════════╝
 """);
 
